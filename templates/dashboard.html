@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>e-Office Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!--this error is normal it is not causing any problem-->
+    <script>
+        const dashboardData = {{ data | tojson }};
+    </script>
+
+</head>
+
+<body>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="header">
+        
+        <div class="logo-box">
+            <a href="/dashboard" class="logo-link">
+            <img src="{{ url_for('static', filename='images/eofficelogo.png') }}" class="dashboard-logo"></a>
+            <span class="logo-text">Dashboard</span>
+        </div>
+        
+
+
+
+        <div style="display:flex; align-items:center; gap:15px;">
+
+            <small style="font-size:13px;color:#e3f2fd;">
+                Last Refreshed: {{ last_refresh }}
+            </small>
+
+            <a href="/logout">Logout</a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <div class="page-layout">
+        <!-- ================= FILTER SIDEBAR ================= -->
+
+        <div class="filter-sidebar">
+
+            <h3>Filters</h3>
+
+            <div class="filter-box">
+
+                <h4>Department</h4>
+
+                <!-- Search -->
+                <div class="search-box">
+                    <input type="text" id="deptSearch" placeholder="Search..."
+                        onkeyup="filterDeptList();toggleClear('dept')">
+
+                    <span class="clear-btn" onclick="clearSearch('dept')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </span>
+                </div>
+
+
+                <!-- Department List -->
+                <div class="dept-list" id="deptList">
+
+                    {% for dept in departments %}
+
+                    <label class="dept-item">
+
+                        <input type="checkbox" value="{{ dept }}">
+
+                        {{ dept }}
+
+                    </label>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+            <!-- Organization Filter -->
+
+            <div class="filter-box">
+
+                <h4>Organization</h4>
+
+                <div class="search-box">
+                    <input type="text" id="orgSearch" placeholder="Search..."
+                        onkeyup="filterOrgList();toggleClear('org')">
+
+                    <span class="clear-btn" onclick="clearSearch('org')">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="dept-list" id="orgList">
+
+                    {% for org in organizations %}
+
+                    <label class="dept-item">
+
+                        <input type="checkbox" value="{{ org }}">
+
+                        {{ org }}
+
+                    </label>
+
+                    {% endfor %}
+
+                </div>
+
+
+
+            </div>
+            <div class="clear-filter-box">
+
+                <button id="clearFiltersBtn" onclick="clearAllFilters()">
+
+                    Clear all Filters
+
+                </button>
+
+            </div>
+
+
+
+
+
+        </div>
+
+
+
+        <div class="dashboard-main">
+
+            <div class="context-bar">
+                <div class="context-left">
+                    <div class="context-chip">
+                        <span class="chip-label">Mode</span>
+                        <span id="modeLabel">Total</span>
+                    </div>
+                    <div class="context-chip">
+                        <span class="chip-label">Departments</span>
+                        <span id="deptLabel">All</span>
+                    </div>
+                    <div class="context-chip">
+                        <span class="chip-label">Organization</span>
+                        <span id="orgLabel">All</span>
+                    </div>
+                </div>
+                <div class="context-right">
+                    <button class="ghost-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">
+                        Hide Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI ROW -->
+
+            <div class="kpi-row">
+
+
+                <!-- Files Created -->
+                <div class="kpi-card">
+
+                    <div class="kpi-title" data-base="Files Created">
+                        Files Created
+                    </div>
+
+                    <div class="kpi-value">
+                        {{ data.created.total }}
+
+                    </div>
+
+                    <div class="kpi-sub">
+
+                        <div class="sub-card">
+                            <h3>{{ data.created.electronic }}
+                            </h3>
+                            <p>Electronic</p>
+                        </div>
+
+                        <div class="sub-card">
+                            <h3>{{ data.created.physical }}
+                            </h3>
+                            <p>Physical</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Files Not Moved -->
+
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title" data-base="Files Not Moved">
+                        Files Not Moved
+                    </div>
+
+                    <div class="kpi-value">
+                        {{ data.not_moved.total }}
+                    </div>
+
+                    <div class="kpi-sub">
+
+                        <div class="sub-card">
+                            <h3>{{ data.not_moved.electronic }}</h3>
+                            <p>Electronic</p>
+                        </div>
+
+                        <div class="sub-card">
+                            <h3>{{ data.not_moved.physical }}</h3>
+                            <p>Physical</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Files Moved -->
+
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title" data-base="Files Moved ">
+                        Files Moved
+                    </div>
+
+                    <div class="kpi-value">
+                        {{ data.moved.total }}
+                    </div>
+
+                    <div class="kpi-sub">
+
+                        <div class="sub-card">
+                            <h3>{{ data.moved.electronic }}</h3>
+                            <p>Electronic</p>
+                        </div>
+
+                        <div class="sub-card">
+                            <h3>{{ data.moved.physical }}</h3>
+                            <p>Physical</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Files Pending -->
+
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title" data-base="Files Pending">
+                        Files Pending
+                    </div>
+
+                    <div class="kpi-value">
+                        {{ data.pending.total }}
+                    </div>
+
+                    <div class="kpi-sub">
+
+                        <div class="sub-card">
+                            <h3>{{ data.pending.electronic }}</h3>
+                            <p>Electronic</p>
+                        </div>
+
+                        <div class="sub-card">
+                            <h3>{{ data.pending.physical }}</h3>
+                            <p>Physical</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Closed Files -->
+
+
+
+                <div class="kpi-card">
+
+                    <div class="kpi-title" data-base="Closed Files ">
+                        Closed Files
+                    </div>
+
+                    <div class="kpi-value">
+                        {{ data.closed.total }}
+                    </div>
+
+                    <div class="kpi-sub">
+
+                        <div class="sub-card">
+                            <h3>{{ data.closed.electronic }}</h3>
+                            <p>Electronic</p>
+                        </div>
+
+                        <div class="sub-card">
+                            <h3>{{ data.closed.physical }}</h3>
+                            <p>Physical</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="insight-row">
+            </div>
+            <!-- ================= INTERACTIVE METERS ================= -->
+
+            <div class="meter-row">
+
+
+                <!-- Active Users -->
+
+                <div class="meter-card active-box">
+
+                    <h2>Active Users</h2>
+
+                    <div class="count">
+                        {{ data.active_users }}
+                    </div>
+
+                </div>
+
+
+                <!-- Not Moved -->
+
+                <div class="meter-card">
+
+                    <h2>Not Moved File %</h2>
+
+                    <div class="chart-container"><canvas id="notMovedChart"></canvas></div>
+
+                    <p class="percent-label">
+                        {{ data.not_moved.percent }}%
+                    </p>
+
+                </div>
+
+
+                <!-- Pending -->
+
+                <div class="meter-card">
+
+                    <h2>Pending File %</h2>
+
+                    <div class="chart-container"><canvas id="pendingChart"></canvas></div>
+
+                    <p class="percent-label">
+                        {{ data.pending.percent }}%
+                    </p>
+
+                </div>
+
+
+                <!-- Closed -->
+
+                <div class="meter-card">
+
+                    <h2>Closed File %</h2>
+
+                    <div class="chart-container"><canvas id="closedChart"></canvas></div>
+
+                    <p class="percent-label">
+                        {{ data.closed.percent }}%
+                    </p>
+
+                </div>
+
+            </div>
+            <div class="table-section">
+
+                <div class="table-header">
+
+                    <h3>Department & Organization Wise Details</h3>
+
+                    <div class="table-controls">
+
+                        <!-- Toggle -->
+                        <div class="file-toggle">
+
+                            <button class="toggle-btn active" data-type="total">
+                                Total
+                            </button>
+
+                            <button class="toggle-btn" data-type="electronic">
+                                Electronic
+                            </button>
+
+                            <button class="toggle-btn" data-type="physical">
+                                Physical
+                            </button>
+
+                        </div>
+
+                        <!-- Download -->
+                        <button id="downloadBtn" onclick="downloadExcel()">
+                            Excel
+                            <svg class="download-icon" viewBox="0 0 24 24">
+                                <path d="M12 3v10m0 0l4-4m-4 4l-4-4M5 21h14" stroke="currentColor" stroke-width="2"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+
+                        </button>
+                    </div>
+
+                </div>
+
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th class="org-col">Organization</th>
+
+                                <th onclick="sortTable(2)">
+                                    Files Created <span class="sort-arrow" id="arrow-2">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(3)">
+                                    Total Moved <span class="sort-arrow" id="arrow-3">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(4)">
+                                    Moved % <span class="sort-arrow" id="arrow-4">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(5)">
+                                    Files Not Moved <span class="sort-arrow" id="arrow-5">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(6)">
+                                    Not Moved % <span class="sort-arrow" id="arrow-6">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(7)">
+                                    Files Pending <span class="sort-arrow" id="arrow-7">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(8)">
+                                    Pending % <span class="sort-arrow" id="arrow-8">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(9)">
+                                    Files Closed <span class="sort-arrow" id="arrow-9">↓</span>
+                                </th>
+
+                                <th onclick="sortTable(10)">
+                                    Closed % <span class="sort-arrow" id="arrow-10">↓</span>
+                                </th>
+                            </tr>
+                        </thead>
+
+
+
+
+                        <tbody>
+
+                            {% for row in table_data %}
+
+                            <tr {% if row.DepartmentName=='Total' %} class="total-row" {% endif %}>
+
+                                <td>{{ row.DepartmentName }}</td>
+
+                                <td>{{ row.OrgName }}</td>
+
+                                <td>{{ row.created }}</td>
+
+                                <td>{{ row.moved }}</td>
+
+                                <td>{{ row.moved_pct }}%</td>
+
+                                <td>{{ row.not_moved }}</td>
+
+                                <td>{{ row.not_moved_pct }}%</td>
+
+                                <td>{{ row.pending }}</td>
+
+                                <td>{{ row.pending_pct }}%</td>
+
+                                <td>{{ row.closed }}</td>
+
+                                <td>{{ row.closed_pct }}%</td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- ================= DETAIL TABLE ================= -->
+
+
+
+
+
+
+
+    </div>
+
+    <script>
+        let notMovedChartObj = null;
+        let pendingChartObj = null;
+        let closedChartObj = null;
+
+
+
+        function createDonutChart(id, mainValue, remainingValue, label, color, chartVar) {
+
+            const ctx = document.getElementById(id);
+
+
+            // Destroy old chart if exists
+            if (chartVar) {
+                chartVar.destroy();
+            }
+
+
+            return new Chart(ctx, {
+
+                type: 'doughnut',
+
+                data: {
+                    labels: [label, 'Remaining'],
+                    datasets: [{
+                        data: [mainValue, remainingValue],
+                        backgroundColor: [color, '#eeeeee'],
+                        borderWidth: 0
+                    }]
+                },
+
+                options: {
+                    responsive: true,
+                    cutout: '70%',
+
+                    plugins: {
+
+                        legend: { display: false },
+
+                        tooltip: {
+
+                            // Disable tooltip on "Remaining"
+                            filter: function (context) {
+
+                                return context.label !== "Remaining";
+                            },
+
+                            callbacks: {
+
+                                label: function (context) {
+
+                                    let value = context.raw || 0;
+
+                                    return context.label + ": " + formatIndian(value);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+            });
+        }
+
+
+
+
+        // ================= INIT =================
+
+
+        notMovedChartObj = createDonutChart(
+            'notMovedChart',
+            dashboardData.not_moved.total,
+            dashboardData.not_moved.remaining,
+            'Not Moved',
+            '#ff9800',
+            notMovedChartObj
+        );
+
+
+        pendingChartObj = createDonutChart(
+            'pendingChart',
+            dashboardData.pending.total,
+            dashboardData.pending.remaining,
+            'Pending',
+            '#4caf50',
+            pendingChartObj
+        );
+
+
+        closedChartObj = createDonutChart(
+            'closedChart',
+            dashboardData.closed.total,
+            dashboardData.closed.remaining,
+            'Closed',
+            '#2196f3',
+            closedChartObj
+        );
+
+
+    </script>
+    <script>
+
+        function filterDeptList() {
+
+            let input = document.getElementById("deptSearch");
+            let filter = input.value.toLowerCase();
+
+            let list = document.getElementById("deptList");
+            let items = list.getElementsByClassName("dept-item");
+
+            for (let i = 0; i < items.length; i++) {
+
+                let txt = items[i].innerText.toLowerCase();
+
+                if (txt.includes(filter)) {
+
+                    items[i].style.display = "";
+
+                } else {
+
+                    items[i].style.display = "none";
+                }
+            }
+        }
+
+    </script>
+    <script>
+
+        /* Organization Search */
+
+
+
+        /* Clear All Filters */
+        function clearAllFilters() {
+            // Reset toggle to Total
+            currentFileMode = "total";
+
+            document
+                .querySelectorAll(".toggle-btn")
+                .forEach(btn => {
+
+                    btn.classList.remove("active");
+
+                    if (btn.dataset.type === "total") {
+                        btn.classList.add("active");
+                    }
+
+                });
+
+            currentView = "department";
+            selectedOrganization = null;
+
+
+            const role = "{{ user_role }}";
+            const userDept = "{{ user_dept }}";
+
+
+            document
+                .querySelectorAll('.filter-sidebar input[type="checkbox"]')
+                .forEach(cb => cb.checked = false);
+
+
+            document.getElementById("deptSearch").value = "";
+            document.getElementById("orgSearch").value = "";
+
+            toggleClear("dept");
+            toggleClear("org");
+
+
+            filterDeptList();
+            filterOrgList();
+
+
+            // Lock dept for normal user
+            if (role !== "admin") {
+
+                document
+                    .querySelectorAll("#deptList input")
+                    .forEach(cb => {
+
+                        if (cb.value === userDept) {
+                            cb.checked = true;
+                        }
+
+                    });
+            }
+
+
+            updateByDepartment();
+        }
+
+
+
+    </script>
+    <script>
+
+        /* ========= ORG SEARCH OPTIMIZATION ========= */
+
+        let orgCache = [];
+
+        /* Build cache once */
+        function buildOrgCache() {
+
+            orgCache = Array.from(
+                document.querySelectorAll("#orgList .dept-item")
+            ).map(el => ({
+                el: el,
+                text: el.innerText.toLowerCase()
+            }));
+        }
+
+
+        /* Debounce */
+        function debounce(fn, delay) {
+
+            let timer;
+
+            return function (...args) {
+
+                clearTimeout(timer);
+
+                timer = setTimeout(() => {
+                    fn.apply(this, args);
+                }, delay);
+            };
+        }
+
+
+        /* Actual filter */
+        function doOrgFilter() {
+
+            const val = document
+                .getElementById("orgSearch")
+                .value
+                .trim()
+                .toLowerCase();
+
+
+            // If empty → show all (fast path)
+            if (!val) {
+
+                for (const item of orgCache) {
+                    item.el.style.display = "";
+                }
+
+                return;
+            }
+
+
+            for (const item of orgCache) {
+
+                item.el.style.display =
+                    item.text.includes(val)
+                        ? ""
+                        : "none";
+            }
+        }
+
+
+        /* Public debounced function */
+        const filterOrgList = debounce(doOrgFilter, 180);
+
+    </script>
+
+
+    <script>
+
+        function getSelectedDepartments() {
+
+            let depts = [];
+
+            document
+                .querySelectorAll("#deptList input:checked")
+                .forEach(cb => depts.push(cb.value));
+
+            return depts;
+        }
+
+
+        // Add event on every dept checkbox
+        document
+            .querySelectorAll("#deptList input")
+            .forEach(cb => {
+
+                cb.addEventListener("change", updateByDepartment);
+
+            });
+
+
+        function updateByDepartment() {
+            currentView = "department";
+            selectedOrganization = null;
+
+
+            let departments = getSelectedDepartments();
+
+
+            // ================= KPI =================
+            fetch("/api/filter/department", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    departments,
+                    mode: currentFileMode
+                })
+
+            })
+                .then(r => r.json())
+                .then(data => updateKPIs(data));
+
+
+            // ================= TABLE =================
+            fetch("/api/filter/table", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    departments,
+                    mode: currentFileMode
+                })
+
+            })
+                .then(r => r.json())
+                .then(rows => updateTable(rows));
+
+
+            // ================= ORG LIST =================
+            fetch("/api/filter/org-by-dept", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    departments
+                })
+
+            })
+                .then(res => res.json())
+                .then(orgs => {
+
+                    updateOrgList(orgs);
+
+                    // Reset org selection
+                    document
+                        .querySelectorAll("#orgList input")
+                        .forEach(cb => cb.checked = false);
+                });
+        }
+
+
+        // Update KPI cards
+        function updateKPIs(data) {
+
+            let cards = document.querySelectorAll(".kpi-card");
+            // ================= TOGGLE MODE HANDLING =================
+
+            const mode = currentFileMode;
+
+            // Helper for display
+            function showOrDash(value, type) {
+
+                if (mode === "total") {
+                    return formatIndian(value);
+                }
+
+                if (mode === "electronic" && type === "physical") {
+                    return "--";
+                }
+
+                if (mode === "physical" && type === "electronic") {
+                    return "--";
+                }
+
+                return formatIndian(value);
+            }
+
+
+
+            // Files Created
+            cards[0].querySelector(".kpi-value").innerText =
+                formatIndian(data.created.total);
+
+
+            cards[0].querySelectorAll("h3")[0].innerText =
+                showOrDash(data.created.electronic, "electronic");
+
+            cards[0].querySelectorAll("h3")[1].innerText =
+                showOrDash(data.created.physical, "physical");
+
+            // Not Moved
+            cards[1].querySelector(".kpi-value").innerText =
+                formatIndian(data.not_moved.total);
+
+            cards[1].querySelectorAll("h3")[0].innerText =
+                showOrDash(data.not_moved.electronic, "electronic");
+
+            cards[1].querySelectorAll("h3")[1].innerText =
+                showOrDash(data.not_moved.physical, "physical");
+
+
+            // Files Moved
+            cards[2].querySelector(".kpi-value").innerText =
+                formatIndian(data.moved.total);
+
+            cards[2].querySelectorAll("h3")[0].innerText =
+                showOrDash(data.moved.electronic, "electronic");
+
+            cards[2].querySelectorAll("h3")[1].innerText =
+                showOrDash(data.moved.physical, "physical");
+
+
+            // Pending
+            cards[3].querySelector(".kpi-value").innerText =
+                formatIndian(data.pending.total);
+
+            cards[3].querySelectorAll("h3")[0].innerText =
+                showOrDash(data.pending.electronic, "electronic");
+
+            cards[3].querySelectorAll("h3")[1].innerText =
+                showOrDash(data.pending.physical, "physical");
+
+
+            // Closed
+            cards[4].querySelector(".kpi-value").innerText =
+                formatIndian(data.closed.total);
+
+            cards[4].querySelectorAll("h3")[0].innerText =
+                showOrDash(data.closed.electronic, "electronic");
+
+            cards[4].querySelectorAll("h3")[1].innerText =
+                showOrDash(data.closed.physical, "physical");
+
+            // ================= ACTIVE USERS =================
+
+            document.querySelector(".active-box .count").innerText =
+                formatIndian(data.active_users);
+
+
+            // ================= UPDATE CHARTS =================
+
+
+            notMovedChartObj = createDonutChart(
+                'notMovedChart',
+                data.not_moved.total,
+                data.not_moved.remaining,
+                'Not Moved',
+                '#ff9800',
+                notMovedChartObj
+            );
+
+
+            pendingChartObj = createDonutChart(
+                'pendingChart',
+                data.pending.total,
+                data.pending.remaining,
+                'Pending',
+                '#4caf50',
+                pendingChartObj
+            );
+
+
+            closedChartObj = createDonutChart(
+                'closedChart',
+                data.closed.total,
+                data.closed.remaining,
+                'Closed',
+                '#2196f3',
+                closedChartObj
+            );
+
+
+            // ================= PERCENT LABELS =================
+
+            document.querySelectorAll(".percent-label")[0].innerText =
+                data.not_moved.percent + "%";
+
+            document.querySelectorAll(".percent-label")[1].innerText =
+                data.pending.percent + "%";
+
+            document.querySelectorAll(".percent-label")[2].innerText =
+                data.closed.percent + "%";
+
+            // ================= INSIGHTS =================
+            const movedRate = Math.max(0, 100 - (data.not_moved.percent || 0));
+            const insightMovedRate = document.getElementById("insightMovedRate");
+            if (insightMovedRate) {
+                insightMovedRate.innerText = movedRate.toFixed(1) + "%";
+            }
+
+            const insightPendingRate = document.getElementById("insightPendingRate");
+            if (insightPendingRate) {
+                insightPendingRate.innerText = (data.pending.percent || 0) + "%";
+            }
+
+            const insightClosedRate = document.getElementById("insightClosedRate");
+            if (insightClosedRate) {
+                insightClosedRate.innerText = (data.closed.percent || 0) + "%";
+            }
+
+            const insightNotMovedRemaining = document.getElementById("insightNotMovedRemaining");
+            if (insightNotMovedRemaining) {
+                insightNotMovedRemaining.innerText =
+                    formatIndian(data.not_moved.remaining || 0);
+            }
+
+            updateActiveFilters();
+        }
+
+        function updateTable(rows) {
+
+            let tbody = document.querySelector("table tbody");
+
+            tbody.innerHTML = "";
+
+
+            rows.forEach(row => {
+
+                let tr = document.createElement("tr");
+
+                if (row.DepartmentName === "Total") {
+                    tr.classList.add("total-row");
+                }
+
+
+                tr.innerHTML = `
+
+<td class="dept-click" onclick="filterFromTable('${row.DepartmentName}')">
+    ${row.DepartmentName}
+</td>
+
+<td class="org-col">${row.OrgName}</td>
+
+<td>${formatIndian(row.created)}</td>
+
+<td>${formatIndian(row.moved)}</td>
+<td>${row.moved_pct}%</td>
+
+<td>${formatIndian(row.not_moved)}</td>
+<td>${row.not_moved_pct}%</td>
+
+<td>${formatIndian(row.pending)}</td>
+<td>${row.pending_pct}%</td>
+
+<td>${formatIndian(row.closed)}</td>
+<td>${row.closed_pct}%</td>
+`;
+
+                tbody.appendChild(tr);
+            });
+
+        }
+
+        function updateOrgList(orgs) {
+
+            let orgList = document.getElementById("orgList");
+
+            orgList.innerHTML = "";
+
+            orgs.forEach(org => {
+
+                let label = document.createElement("label");
+
+                label.className = "dept-item";
+
+                label.innerHTML = `
+            <input type="checkbox" value="${org}">
+            ${org}
+        `;
+
+                orgList.appendChild(label);
+            });
+
+
+            // Rebuild cache after update
+            buildOrgCache();
+        }
+
+
+
+    </script>
+
+    <script>
+        function updateActiveFilters() {
+            const modeLabel = document.getElementById("modeLabel");
+            const deptLabel = document.getElementById("deptLabel");
+            const orgLabel = document.getElementById("orgLabel");
+
+            const modeText = currentFileMode === "electronic"
+                ? "Electronic"
+                : currentFileMode === "physical"
+                    ? "Physical"
+                    : "Total";
+
+            modeLabel.innerText = modeText;
+
+            const depts = getSelectedDepartments();
+            deptLabel.innerText = depts.length ? depts.join(", ") : "All";
+
+            if (currentView === "organization" && selectedOrganization) {
+                orgLabel.innerText = selectedOrganization;
+            } else {
+                orgLabel.innerText = "All";
+            }
+        }
+
+        function toggleSidebar() {
+            document.body.classList.toggle("sidebar-collapsed");
+
+            const isCollapsed = document.body.classList.contains("sidebar-collapsed");
+            const btn = document.getElementById("sidebarToggleBtn");
+            btn.innerText = isCollapsed ? "Show Filters" : "Hide Filters";
+
+            try {
+                localStorage.setItem("sidebarCollapsed", isCollapsed ? "1" : "0");
+            } catch (e) {
+                // Ignore storage errors
+            }
+        }
+
+        function applySidebarPreference() {
+            try {
+                const saved = localStorage.getItem("sidebarCollapsed");
+                if (saved === "1") {
+                    document.body.classList.add("sidebar-collapsed");
+                    const btn = document.getElementById("sidebarToggleBtn");
+                    if (btn) btn.innerText = "Show Filters";
+                }
+            } catch (e) {
+                // Ignore storage errors
+            }
+        }
+    </script>
+
+    <script>
+        // Load all organizations on first page load
+        window.onload = function () {
+
+            const role = "{{ user_role }}";
+            const userDept = "{{ user_dept }}";
+
+
+            // Auto select dept for user
+            if (role !== "admin") {
+
+                document
+                    .querySelectorAll("#deptList input")
+                    .forEach(cb => {
+
+                        if (cb.value === userDept) {
+                            cb.checked = true;
+                        }
+
+                    });
+            }
+
+
+            updateByDepartment();
+
+            setTimeout(buildOrgCache, 300);
+            updateKpiTitles();
+            applySidebarPreference();
+
+        };
+
+
+    </script>
+    <script>
+        function filterFromTable(deptName) {
+
+            // Uncheck all departments
+            document
+                .querySelectorAll("#deptList input")
+                .forEach(cb => cb.checked = false);
+
+            // Check clicked department
+            document
+                .querySelectorAll("#deptList input")
+                .forEach(cb => {
+
+                    if (cb.value === deptName) {
+                        cb.checked = true;
+                    }
+
+                });
+
+            // Reload dashboard
+            updateByDepartment();
+        }
+    </script>
+
+    <script>
+        let sortDirections = {
+            2: "desc",  // Files Created
+            3: "desc",  // Total Moved
+            4: "desc",  // Moved %
+            5: "desc",  // Files Not Moved
+            6: "desc",  // Not Moved %
+            7: "desc",  // Files Pending
+            8: "desc",  // Pending %
+            9: "desc",  // Files Closed
+            10: "desc"  // Closed %
+        };
+
+
+        function sortTable(colIndex) {
+
+            const table = document.querySelector("table");
+            const tbody = table.querySelector("tbody");
+
+            let rows = Array.from(tbody.querySelectorAll("tr"));
+
+            // Separate total row
+            let totalRow = rows.find(r =>
+                r.classList.contains("total-row")
+            );
+
+            let dataRows = rows.filter(r =>
+                !r.classList.contains("total-row")
+            );
+
+
+            // Toggle direction
+            let direction = sortDirections[colIndex] === "asc"
+                ? "desc"
+                : "asc";
+
+            sortDirections[colIndex] = direction;
+
+
+            // Reset arrows to ↓
+            document.querySelectorAll(".sort-arrow")
+                .forEach(a => a.innerText = "↓");
+
+
+            // Set active arrow
+            const arrow = document.getElementById("arrow-" + colIndex);
+
+            arrow.innerText = direction === "asc" ? "↑" : "↓";
+
+
+            // Sort
+            dataRows.sort((a, b) => {
+
+                let A = parseFloat(a.children[colIndex].innerText) || 0;
+                let B = parseFloat(b.children[colIndex].innerText) || 0;
+
+                return direction === "asc"
+                    ? A - B
+                    : B - A;
+            });
+
+
+            // Rebuild
+            tbody.innerHTML = "";
+
+            dataRows.forEach(r => tbody.appendChild(r));
+
+            if (totalRow) tbody.appendChild(totalRow);
+        }
+
+    </script>
+
+    <script>
+
+        function handleOrgFilter() {
+
+            let selectedOrg = "";
+
+
+
+            document
+                .querySelectorAll("#orgList input:checked")
+                .forEach(cb => {
+                    selectedOrg = cb.value;
+                });
+            currentView = "organization";
+            selectedOrganization = selectedOrg;
+
+
+
+            console.log("Selected Org:", selectedOrg);
+
+            updateActiveFilters();
+
+
+            // If nothing selected → back to department view
+            if (!selectedOrg) {
+                updateByDepartment();
+                return;
+            }
+
+
+            // ================= KPI =================
+            fetch("/api/filter/organization", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    organization: selectedOrg,
+                    mode: currentFileMode
+                })
+
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    console.log("Org KPI Data:", data);
+
+                    updateKPIs(data);
+                });
+
+
+            // ================= TABLE =================
+            fetch("/api/filter/table-by-org", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    organization: selectedOrg,
+                    mode: currentFileMode
+                })
+
+            })
+                .then(res => res.json())
+                .then(rows => {
+
+                    console.log("Org Table Data:", rows);
+
+                    updateTable(rows);
+                });
+        }
+
+    </script>
+
+
+    <script>
+
+        document.addEventListener("change", function (e) {
+
+            // Only org checkbox
+            if (e.target.matches("#orgList input[type='checkbox']")) {
+
+                // Allow only one checked
+                document
+                    .querySelectorAll("#orgList input[type='checkbox']")
+                    .forEach(cb => {
+
+                        if (cb !== e.target) {
+                            cb.checked = false;
+                        }
+
+                    });
+
+                // Call org filter
+                handleOrgFilter();
+            }
+
+        });
+
+    </script>
+
+    <script>
+
+        /* Show / Hide Clear Button */
+
+        function toggleClear(type) {
+
+            let input = document.getElementById(
+                type === "dept" ? "deptSearch" : "orgSearch"
+            );
+
+            let btn = input.nextElementSibling;
+
+            btn.style.display = input.value ? "block" : "none";
+        }
+
+
+        /* Clear Search */
+
+        function clearSearch(type) {
+
+            let inputId = type === "dept" ? "deptSearch" : "orgSearch";
+
+            let input = document.getElementById(inputId);
+
+            input.value = "";
+
+            toggleClear(type);
+
+            if (type === "dept") {
+                filterDeptList();
+            } else {
+                filterOrgList();
+            }
+        }
+
+    </script>
+
+    <script>
+        function collectTableRows(visibleOnly) {
+            let rows = [];
+
+            document
+                .querySelectorAll("table tbody tr")
+                .forEach(tr => {
+                    if (visibleOnly && tr.style.display === "none") {
+                        return;
+                    }
+
+                    let tds = tr.querySelectorAll("td");
+                    if (!tds.length) return;
+
+                    rows.push({
+                        DepartmentName: tds[0].innerText.trim(),
+                        OrgName: tds[1].innerText.trim(),
+
+                        created: tds[2].innerText,
+                        moved: tds[3].innerText,
+                        moved_pct: tds[4].innerText.replace("%", ""),
+
+                        not_moved: tds[5].innerText,
+                        not_moved_pct: tds[6].innerText.replace("%", ""),
+
+                        pending: tds[7].innerText,
+                        pending_pct: tds[8].innerText.replace("%", ""),
+
+                        closed: tds[9].innerText,
+                        closed_pct: tds[10].innerText.replace("%", "")
+                    });
+                });
+
+            return rows;
+        }
+
+        function downloadExcel() {
+            let rows = collectTableRows(true);
+            if (!rows.length) return;
+
+            fetch("/api/download/table", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    rows: rows
+                })
+            })
+                .then(res => res.blob())
+                .then(blob => {
+                    let url = window.URL.createObjectURL(blob);
+                    let a = document.createElement("a");
+                    a.href = url;
+                    a.download = "dashboard_table.xlsx";
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                });
+        }
+
+    </script>
+
+    <script>
+
+        function formatIndian(num) {
+
+            if (num === null || num === undefined) return "0";
+
+            num = num.toString().replace(/,/g, "");
+
+            let x = num.split(".");
+
+            let intPart = x[0];
+            let decPart = x.length > 1 ? "." + x[1] : "";
+
+            let last3 = intPart.slice(-3);
+            let rest = intPart.slice(0, -3);
+
+            if (rest !== "") {
+                last3 = "," + last3;
+            }
+
+            rest = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ",");
+
+            return rest + last3 + decPart;
+        }
+
+
+
+    </script>
+    <script>
+
+        let currentFileMode = "total";
+        let currentView = "department";   // department | organization
+        let selectedOrganization = null;
+
+
+
+        document
+            .querySelectorAll(".toggle-btn")
+            .forEach(btn => {
+
+                btn.addEventListener("click", function () {
+
+                    // Remove active from all
+                    document
+                        .querySelectorAll(".toggle-btn")
+                        .forEach(b => b.classList.remove("active"));
+
+
+                    // Add active to clicked
+                    this.classList.add("active");
+
+
+                    // Get selected mode
+                    currentFileMode = this.dataset.type;
+                    updateKpiTitles();
+
+
+
+                    // Reload based on current view
+                    if (currentView === "organization" && selectedOrganization) {
+
+                        handleOrgFilter();
+
+                    } else {
+
+                        updateByDepartment();
+                    }
+
+
+                });
+
+            });
+
+    </script>
+
+
+    <script>
+
+        function updateKpiTitles() {
+
+            let prefix = "";
+
+            if (currentFileMode === "electronic") {
+                prefix = "Electronic ";
+            }
+            else if (currentFileMode === "physical") {
+                prefix = "Physical ";
+            }
+            else {
+                prefix = "Total ";
+            }
+
+
+            document
+                .querySelectorAll(".kpi-title")
+                .forEach(title => {
+
+                    const base = title.dataset.base;
+
+                    title.innerText = prefix + base;
+                });
+
+            updateActiveFilters();
+        }
+
+    </script>
+
+
+</body>
+
+</html>

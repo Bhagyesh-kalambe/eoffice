@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(120deg, #1a73e8, #0f9d58);
+    height: 100vh;
+}
+
+/* Center */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Card */
+.auth-box {
+    background: linear-gradient(120deg, #689adb, #8cd5b2);
+    width: 400px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.25);
+}
+
+/* Heading */
+.auth-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #1f2329;
+
+}
+
+/* Inputs */
+.auth-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* Button */
+.auth-box button {
+    width: 100%;
+    padding: 12px;
+    background: #1a73e8;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.auth-box button:hover {
+    background: #155bc7;
+}
+
+/* Password Box */
+.password-box {
+    position: relative;
+}
+
+.password-box span {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* Links */
+.auth-box p {
+    text-align: center;
+}
+
+.auth-box a {
+    text-decoration: none;
+    color: #1a73e8;
+}
+
+/* Alerts */
+.alert {
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.alert-danger {
+    background: #ffe1e1;
+    color: #b00000;
+}
+
+.alert-success {
+    background: #e1ffe4;
+    color: #007d1a;
+}
+
+
+.password-box span {
+    color: #555;
+    transition: 0.2s;
+}
+
+.password-box span:hover {
+    color: #1a73e8;
+}
+
+
+/* ================= LOGIN LOGO ================= */
+
+.login-logo {
+    text-align: center;
+    margin-bottom: 12px;
+    color:black;
+}
+
+.login-logo-img {
+    height: 58px;   /* Adjust size if needed */
+    width: auto;
+    object-fit: contain;
+    
+    padding:15px;
+}
+
+

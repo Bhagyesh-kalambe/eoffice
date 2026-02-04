@@ -1,0 +1,1163 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap');
+
+:root {
+    --bg: #f3f6fb;
+    --surface: #ffffff;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --primary: #1b5fa7;
+    --primary-dark: #13477d;
+    --accent: #2c9fb5;
+    --sun: #f5b042;
+    --shadow-soft: 0 8px 22px rgba(15, 23, 42, 0.12);
+    --shadow-strong: 0 14px 30px rgba(15, 23, 42, 0.2);
+    --radius-lg: 14px;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Work Sans", sans-serif;
+}
+
+body {
+    background: radial-gradient(1200px 600px at 10% -10%, #dbeafe 0%, transparent 55%),
+        radial-gradient(900px 500px at 110% 10%, #d1fae5 0%, transparent 45%),
+        var(--bg);
+    color: var(--ink);
+}
+
+
+/* ================= HEADER ================= */
+
+.header {
+    background: #1a73e8;
+    color: white;
+    padding: 15px 30px;
+    
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.header h1 {
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+    background: #155bc7;
+    padding: 8px 15px;
+    border-radius: 6px;
+}
+
+.header a:hover {
+    background: #0f4fbf;
+}
+
+
+/* ================= MAIN ================= */
+
+.container {
+    padding: 25px;
+}
+
+
+/* ================= KPI CARDS ================= */
+
+.kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+
+/* Main Card */
+.kpi-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(119, 72, 72, 0.15);
+    overflow: hidden;
+    min-height: 210px;   /* Increased */
+    
+
+    padding-bottom: 12px;
+
+    overflow: visible;  /* Important */
+     transition: 
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+/* KPI Hover Effect */
+
+.kpi-card:hover {
+
+    transform: translateY(-6px) scale(1.04);
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+    cursor: pointer;
+}
+
+
+
+/* Card Header */
+.kpi-title {
+    background: #8bdcf7;
+    color: black;
+    font-weight: 600;
+    padding: 10px;
+    padding-top:x;
+    text-align: center;
+}
+
+
+/* Card Value */
+.kpi-value {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #c28b36;
+    padding: 15px;
+}
+
+
+/* Sub Cards */
+.kpi-sub {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+}
+
+.sub-card {
+    background: rgb(250, 249, 249);
+    width: 47%;
+    border-radius: 10px;
+    text-align: center;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    
+}
+
+.sub-card h3 {
+    color: #c28b36;
+    font-size: 20px;
+}
+
+.sub-card p {
+    color: #1a237e;
+    font-weight: 600;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1100px) {
+
+    .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .kpi-row {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* ================= METERS ================= */
+
+.meter-row {
+    margin-top: 30px;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+
+/* Meter Card */
+.meter-card {
+    background: white;
+    border-radius: 12px;
+
+    padding: 15px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+
+    text-align: center;
+
+    min-height: 230px;
+    transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+}
+/* Donut Card Hover Effect */
+
+.meter-card:hover {
+
+    transform: translateY(-6px) scale(1.05);
+
+    box-shadow: 0 10px 25px rgba(6, 6, 6, 0.25);
+
+    cursor: pointer;
+}
+
+
+
+
+/* Active Users */
+.active-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.active-box h2 {
+    font-size: 18px;
+}
+
+.active-box .count {
+    font-size: 28px;
+    color: #1a73e8;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+
+/* Gauge */
+
+.gauge {
+    width: 160px;
+    height: 80px;
+
+    margin: 20px auto;
+
+    position: relative;
+    overflow: hidden;
+}
+
+
+.gauge::before {
+    content: "";
+
+    width: 160px;
+    height: 160px;
+
+    border-radius: 50%;
+
+    background: #eee;
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+
+/* Progress */
+
+.gauge .fill {
+    width: 160px;
+    height: 160px;
+
+    border-radius: 50%;
+
+    background: #4caf50;
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    transform-origin: center center;
+    transform: rotate(0deg);
+}
+
+
+/* Mask */
+
+.gauge .mask {
+    width: 120px;
+    height: 120px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+}
+
+
+/* Value */
+
+.gauge-value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* ================= CHART METERS ================= */
+
+.meter-card canvas {
+    max-width: 160px;
+    margin: 15px auto;
+}
+
+.percent-label {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+/* ================= PAGE LAYOUT ================= */
+
+.page-layout {
+
+    display: grid;
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+    gap: 20px;
+
+    padding: 20px;
+}
+
+
+/* ================= FILTER SIDEBAR ================= */
+
+.filter-sidebar {
+
+    background: #f7fbff;
+
+    border-radius: 12px;
+
+    padding: 12px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+    height: calc(100vh - 120px);
+
+    overflow: hidden;
+}
+
+
+.filter-sidebar h3 {
+
+    text-align: center;
+
+    margin-bottom: 10px;
+
+    border-bottom: 2px solid #333;
+
+    padding-bottom: 5px;
+}
+
+
+.filter-box h4 {
+
+    margin: 8px 0;
+}
+
+
+/* Search Box */
+
+#deptSearch,#orgSearch {
+
+    width: 100%;
+
+    padding: 6px;
+
+    border-radius: 5px;
+
+    border: 1px solid #ccc;
+
+    margin-bottom: 8px;
+}
+
+
+/* Department List */
+
+
+
+
+/* Each Item */
+
+.dept-item {
+
+    display: flex;
+
+    align-items: center;
+
+    font-size: 13px;
+
+    padding: 4px;
+
+    cursor: pointer;
+}
+
+
+.dept-item input {
+
+    margin-right: 6px;
+}
+
+
+.dept-item:hover {
+
+    background: #eaf3ff;
+}
+
+
+/* ================= MAIN DASHBOARD ================= */
+
+.dashboard-main {
+
+    width: 100%;
+    min-width: 0;
+}
+
+
+
+/* ================= FILTER HEIGHT FIX ================= */
+
+.filter-sidebar {
+
+    width: 260px;
+
+    min-width: 260px;
+
+    background: #f8fbff;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    height: calc(100vh - 80px);
+
+    overflow-y: auto;   /* IMPORTANT */
+
+    flex-shrink: 0;
+}
+
+
+
+
+
+/* ================= KPI COMPACT ================= */
+
+.kpi-card {
+
+    min-height: 170px;
+
+    padding-bottom: 10px;
+}
+
+
+.kpi-title {
+
+    font-size: 14px;
+
+    padding: 6px;
+    padding-top: 12px;
+}
+
+
+.kpi-value {
+
+    font-size: 20px;
+
+    padding: 6px;
+}
+
+
+/* Sub Cards */
+
+.sub-card {
+
+    padding: 6px;
+
+    min-height: 55px;
+}
+
+
+.sub-card h3 {
+
+    font-size: 14px;
+}
+
+
+.sub-card p {
+
+    font-size: 12px;
+}
+
+/* ================= DONUT COMPACT ================= */
+
+.meter-card {
+
+    min-height: 200px;
+
+    padding: 12px;
+}
+
+
+.meter-card h2 {
+
+    font-size: 16px;
+
+    margin-bottom: 5px;
+}
+
+
+.meter-card canvas {
+
+    max-width: 150px;
+    max-height: 150px;
+
+    margin: 10px auto;
+}
+
+
+.percent-label {
+
+    font-size: 18px;
+
+    margin-top: 5px;
+}
+
+
+
+
+/* ================= TOOLTIP FIX ================= */
+
+.meter-card {
+    overflow: visible !important;
+}
+
+.chart-container {
+    position: relative;
+    overflow: visible !important;
+}
+
+/* ================= TABLE ================= */
+
+.table-section {
+
+    margin-top: 30px;
+
+    background: white;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+
+.table-section h3 {
+
+    margin-bottom: 10px;
+}
+
+
+/* Scroll */
+.table-container {
+
+    max-height: 300px;
+
+    overflow-y: auto;
+
+    border: 1px solid #ddd;
+
+    position: relative;
+}
+
+
+/* Table */
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 13px;
+}
+
+
+thead {
+
+    background: #1a73e8;
+
+    color: white;
+
+    position: sticky;
+
+    top: 0;
+    
+}
+
+
+th, td {
+
+    padding: 6px;
+
+    border: 1px solid #ddd;
+
+    text-align: center;
+}
+
+
+tbody tr:nth-child(even) {
+
+    background: #f5f7fb;
+}
+
+
+/* Total Row */
+
+.total-row {
+
+    background: #fff3cd !important;
+
+    font-weight: bold;
+}
+
+/* ================= STICKY TOTAL ================= */
+
+.total-row {
+
+    position: sticky;
+
+    bottom: 0;
+
+    background: #fff3cd !important;
+
+    z-index: 1;
+
+    border-top: 2px solid #999;
+}
+
+.table-section {
+
+    width: 100%;
+
+    margin-top: 25px;
+}
+
+
+/* ================= KPI SUB CARDS FIX ================= */
+
+.sub-cards {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;   /* Allow wrapping */
+}
+
+
+.filter-box {
+
+    margin-bottom: 15px;
+}
+#clearFiltersBtn {
+
+    width: 95%;
+
+    padding: 10px;
+
+    background: linear-gradient(135deg, #1976d2, #0d47a1);
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+
+    transition: all 0.3s ease;
+}
+#clearFiltersBtn:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+
+    background: linear-gradient(135deg, #1565c0, #0b3c91);
+}
+
+/* Clickable Department in Table */
+.dept-click {
+    cursor: pointer;
+    color: #1a73e8;
+    font-weight: 600;
+}
+
+.dept-click:hover {
+    text-decoration: underline;
+    color: #0d47a1;
+}
+
+/* Sorting arrows */
+
+.sort-arrow {
+    margin-left: 2px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+}
+
+th {
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+}
+
+
+
+/* Organization Column Size Control */
+/* Organization Column Size + Center Alignment */
+
+.org-col {
+    max-width: 220px;
+    min-width: 180px;
+
+    white-space: normal;
+    word-break: break-word;
+
+    text-align: center;      /* Horizontal center */
+    vertical-align: middle; /* Vertical center */
+
+    padding: 6px 8px;
+}
+
+
+/* Responsive */
+@media (max-width: 900px) {
+
+    .org-col {
+        max-width: 150px;
+        min-width: 130px;
+        font-size: 12px;
+    }
+}
+
+
+
+/* Department & Organization List Fixed Height */
+
+.dept-list {
+
+    height: 260px;       /* Fixed size */
+    max-height: 260px;
+    min-height: 260px;
+
+    overflow-y: auto;
+
+    border: 1px solid #ddd;
+    padding: 6px;
+
+    border-radius: 6px;
+    background: #ffffff;
+
+    font-size: 12.5px;
+}
+
+
+/* Search Box with SVG Clear Button */
+
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+.search-box input {
+    width: 100%;
+    padding-right: 32px; /* space for icon */
+}
+
+.clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 40%;
+    transform: translateY(-50%);
+
+    width: 18px;
+    height: 18px;
+
+    cursor: pointer;
+    display: none;
+
+    color: #888;
+}
+
+.clear-btn svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+.clear-btn:hover {
+    color: #000;
+}
+
+
+
+
+
+#downloadBtn {
+
+    padding: 8px 14px;
+
+    background: linear-gradient(135deg, #51adee, #4a8ee6);
+
+    color: white;
+
+    border: none;
+
+    border-radius: 6px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+    width: 20vh;
+
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+
+    transition: all 0.3s ease;
+}
+
+
+#downloadBtn:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 5px 10px rgba(0,0,0,0.25);
+
+    background: linear-gradient(135deg, #1b5e20, #0d3d12);
+}
+
+/* ================= DOWNLOAD ICON ================= */
+
+#downloadBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.download-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* ================= HEADER LOGO ================= */
+
+.logo-box {
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-logo {
+    height: 45px;      /* Adjust if needed */
+    width: auto;
+    object-fit: contain;
+}
+
+.logo-text {
+    margin-left: 10px;
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+}
+
+
+/* ================= TABLE TOGGLE ================= */
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.table-controls {
+    flex-wrap: wrap;
+}
+
+.file-toggle {
+    display: flex;
+    background: #e3f2fd;
+    border-radius: 6px;
+    padding: 3px;
+}
+
+.toggle-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    color: #1a237e;
+    transition: all 0.2s ease;
+     transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.toggle-btn:hover {
+
+    transform: translateY(-2px) scale(1.05);
+
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+
+    background:#88addded;
+}
+
+
+
+
+
+
+.toggle-btn.active {
+
+    background: #1a73e8;
+    color: white;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+    transform: translateY(-1px);
+}
+
+
+/* Remove header link styling from logo */
+
+.header .logo-link {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+.header .logo-link:hover,
+.header .logo-link:active,
+.header .logo-link:visited {
+    background: transparent !important;
+}
+
+/* ================= NEW UI ENHANCEMENTS ================= */
+
+.header {
+    background: linear-gradient(120deg, var(--primary-dark), var(--primary));
+    box-shadow: var(--shadow-soft);
+}
+
+.logo-text,
+.header h1,
+.kpi-title,
+.table-section h3,
+.meter-card h2,
+.insight-label {
+    font-family: "Sora", sans-serif;
+}
+
+.page-layout {
+    transition: grid-template-columns 0.25s ease;
+}
+
+.sidebar-collapsed .filter-sidebar {
+    display: none;
+}
+
+.sidebar-collapsed .page-layout {
+    grid-template-columns: 1fr;
+}
+
+.context-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 10px 12px;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 14px;
+}
+
+.context-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.context-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px dashed #cbd5e1;
+    background: #f8fafc;
+    font-size: 12px;
+    color: var(--ink);
+}
+
+.chip-label {
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.ghost-btn {
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: var(--primary-dark);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ghost-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+}
+
+.insight-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 14px 0 22px;
+}
+
+.insight-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    box-shadow: var(--shadow-soft);
+}
+
+.insight-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.insight-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.insight-sub {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.table-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-search input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    font-size: 12px;
+    min-width: 160px;
+}
+
+#downloadBtn {
+    width: auto;
+    background: linear-gradient(135deg, #1f7ac7, #1b5fa7);
+}
+
+#downloadBtn:hover {
+    background: linear-gradient(135deg, #1b5fa7, #154b86);
+}
+
+.table-section {
+    border-radius: var(--radius-lg);
+}
+
+.kpi-card,
+.meter-card,
+.table-section,
+.filter-sidebar {
+    border-radius: var(--radius-lg);
+}
+
+@media (max-width: 1100px) {
+    .insight-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 980px) {
+    .page-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-sidebar {
+        height: auto;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 720px) {
+    .context-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .insight-row {
+        grid-template-columns: 1fr;
+    }
+
+    .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
