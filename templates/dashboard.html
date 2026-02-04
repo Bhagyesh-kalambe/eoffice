@@ -463,8 +463,12 @@
 
                         <thead>
                             <tr>
-                                <th>Department</th>
-                                <th class="org-col">Organization</th>
+                                <th onclick="sortTable(0)">
+                                    Department <span class="sort-arrow" id="arrow-0">↓</span>
+                                </th>
+                                <th class="org-col" onclick="sortTable(1)">
+                                    Organization <span class="sort-arrow" id="arrow-1">↓</span>
+                                </th>
 
                                 <th onclick="sortTable(2)">
                                     Files Created <span class="sort-arrow" id="arrow-2">↓</span>
@@ -517,23 +521,23 @@
 
                                 <td>{{ row.OrgName }}</td>
 
-                                <td>{{ row.created }}</td>
+                                <td data-value="{{ row.created }}">{{ row.created }}</td>
 
-                                <td>{{ row.moved }}</td>
+                                <td data-value="{{ row.moved }}">{{ row.moved }}</td>
 
-                                <td>{{ row.moved_pct }}%</td>
+                                <td data-value="{{ row.moved_pct }}">{{ row.moved_pct }}%</td>
 
-                                <td>{{ row.not_moved }}</td>
+                                <td data-value="{{ row.not_moved }}">{{ row.not_moved }}</td>
 
-                                <td>{{ row.not_moved_pct }}%</td>
+                                <td data-value="{{ row.not_moved_pct }}">{{ row.not_moved_pct }}%</td>
 
-                                <td>{{ row.pending }}</td>
+                                <td data-value="{{ row.pending }}">{{ row.pending }}</td>
 
-                                <td>{{ row.pending_pct }}%</td>
+                                <td data-value="{{ row.pending_pct }}">{{ row.pending_pct }}%</td>
 
-                                <td>{{ row.closed }}</td>
+                                <td data-value="{{ row.closed }}">{{ row.closed }}</td>
 
-                                <td>{{ row.closed_pct }}%</td>
+                                <td data-value="{{ row.closed_pct }}">{{ row.closed_pct }}%</td>
 
                             </tr>
 
@@ -1078,48 +1082,46 @@
             updateActiveFilters();
         }
 
-        function updateTable(rows) {
+        let tableRowsData = [];
 
+        function renderTableRows(rows) {
             let tbody = document.querySelector("table tbody");
-
-            tbody.innerHTML = "";
-
+            const frag = document.createDocumentFragment();
 
             rows.forEach(row => {
-
                 let tr = document.createElement("tr");
 
                 if (row.DepartmentName === "Total") {
                     tr.classList.add("total-row");
                 }
 
-
                 tr.innerHTML = `
-
 <td class="dept-click" onclick="filterFromTable('${row.DepartmentName}')">
     ${row.DepartmentName}
 </td>
-
 <td class="org-col">${row.OrgName}</td>
-
-<td>${formatIndian(row.created)}</td>
-
-<td>${formatIndian(row.moved)}</td>
-<td>${row.moved_pct}%</td>
-
-<td>${formatIndian(row.not_moved)}</td>
-<td>${row.not_moved_pct}%</td>
-
-<td>${formatIndian(row.pending)}</td>
-<td>${row.pending_pct}%</td>
-
-<td>${formatIndian(row.closed)}</td>
-<td>${row.closed_pct}%</td>
+<td data-value="${row.created}">${formatIndian(row.created)}</td>
+<td data-value="${row.moved}">${formatIndian(row.moved)}</td>
+<td data-value="${row.moved_pct}">${row.moved_pct}%</td>
+<td data-value="${row.not_moved}">${formatIndian(row.not_moved)}</td>
+<td data-value="${row.not_moved_pct}">${row.not_moved_pct}%</td>
+<td data-value="${row.pending}">${formatIndian(row.pending)}</td>
+<td data-value="${row.pending_pct}">${row.pending_pct}%</td>
+<td data-value="${row.closed}">${formatIndian(row.closed)}</td>
+<td data-value="${row.closed_pct}">${row.closed_pct}%</td>
 `;
 
-                tbody.appendChild(tr);
+                frag.appendChild(tr);
             });
 
+            tbody.replaceChildren(frag);
+        }
+
+        function updateTable(rows) {
+            tableRowsData = Array.isArray(rows)
+                ? rows.map(r => ({ ...r, __isTotal: r.DepartmentName === "Total" }))
+                : [];
+            renderTableRows(tableRowsData);
         }
 
         function updateOrgList(orgs) {
@@ -1409,6 +1411,8 @@
 
     <script>
         let sortDirections = {
+            0: "asc",   // Department
+            1: "asc",   // Organization
             2: "desc",  // Files Created
             3: "desc",  // Total Moved
             4: "desc",  // Moved %
@@ -1420,22 +1424,67 @@
             10: "desc"  // Closed %
         };
 
+        const numericCols = new Set([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        const stringCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+
+        function ensureTableRowsData() {
+            if (tableRowsData.length > 0) return;
+
+            const rows = Array.from(document.querySelectorAll("table tbody tr"));
+            tableRowsData = rows.map(tr => {
+                const cells = tr.querySelectorAll("td");
+                const isTotal = tr.classList.contains("total-row");
+                const getNum = (idx) => {
+                    const v = cells[idx]?.dataset?.value;
+                    const num = Number(v ?? 0);
+                    return Number.isNaN(num) ? 0 : num;
+                };
+
+                return {
+                    DepartmentName: cells[0]?.textContent?.trim() || "",
+                    OrgName: cells[1]?.textContent?.trim() || "",
+                    created: getNum(2),
+                    moved: getNum(3),
+                    moved_pct: getNum(4),
+                    not_moved: getNum(5),
+                    not_moved_pct: getNum(6),
+                    pending: getNum(7),
+                    pending_pct: getNum(8),
+                    closed: getNum(9),
+                    closed_pct: getNum(10),
+                    __isTotal: isTotal
+                };
+            });
+        }
+
+        function getSortValue(row, colIndex) {
+            if (numericCols.has(colIndex)) {
+                switch (colIndex) {
+                    case 2: return row.created;
+                    case 3: return row.moved;
+                    case 4: return row.moved_pct;
+                    case 5: return row.not_moved;
+                    case 6: return row.not_moved_pct;
+                    case 7: return row.pending;
+                    case 8: return row.pending_pct;
+                    case 9: return row.closed;
+                    case 10: return row.closed_pct;
+                    default: return 0;
+                }
+            }
+
+            if (colIndex === 0) return row.DepartmentName || "";
+            if (colIndex === 1) return row.OrgName || "";
+            return "";
+        }
+
 
         function sortTable(colIndex) {
 
-            const table = document.querySelector("table");
-            const tbody = table.querySelector("tbody");
+            ensureTableRowsData();
 
-            let rows = Array.from(tbody.querySelectorAll("tr"));
-
-            // Separate total row
-            let totalRow = rows.find(r =>
-                r.classList.contains("total-row")
-            );
-
-            let dataRows = rows.filter(r =>
-                !r.classList.contains("total-row")
-            );
+            const dataRows = tableRowsData.filter(r => !r.__isTotal);
+            const totalRow = tableRowsData.find(r => r.__isTotal);
 
 
             // Toggle direction
@@ -1453,28 +1502,27 @@
 
             // Set active arrow
             const arrow = document.getElementById("arrow-" + colIndex);
+            if (arrow) {
+                arrow.innerText = direction === "asc" ? "↑" : "↓";
+            }
 
-            arrow.innerText = direction === "asc" ? "↑" : "↓";
 
-
-            // Sort
             dataRows.sort((a, b) => {
+                const A = getSortValue(a, colIndex);
+                const B = getSortValue(b, colIndex);
 
-                let A = parseFloat(a.children[colIndex].innerText) || 0;
-                let B = parseFloat(b.children[colIndex].innerText) || 0;
+                if (numericCols.has(colIndex)) {
+                    return direction === "asc" ? A - B : B - A;
+                }
 
                 return direction === "asc"
-                    ? A - B
-                    : B - A;
+                    ? stringCollator.compare(A, B)
+                    : stringCollator.compare(B, A);
             });
 
-
-            // Rebuild
-            tbody.innerHTML = "";
-
-            dataRows.forEach(r => tbody.appendChild(r));
-
-            if (totalRow) tbody.appendChild(totalRow);
+            const merged = totalRow ? [...dataRows, totalRow] : dataRows;
+            tableRowsData = merged;
+            renderTableRows(merged);
         }
 
     </script>
