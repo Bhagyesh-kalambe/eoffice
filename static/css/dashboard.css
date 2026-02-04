@@ -27,6 +27,16 @@ body {
         radial-gradient(900px 500px at 110% 10%, #d1fae5 0%, transparent 45%),
         var(--bg);
     color: var(--ink);
+    /* Make 100% zoom look like 90% zoom in supporting browsers */
+    zoom: 0.9;
+}
+
+@supports not (zoom: 1) {
+    body {
+        transform: scale(0.9);
+        transform-origin: top left;
+        width: 111.111%;
+    }
 }
 
 
@@ -191,13 +201,13 @@ body {
     background: white;
     border-radius: 12px;
 
-    padding: 15px;
+    padding: clamp(10px, 1.2vw, 14px);
 
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 
     text-align: center;
 
-    min-height: 230px;
+    min-height: clamp(190px, 22vw, 230px);
     transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -311,8 +321,13 @@ body {
 /* ================= CHART METERS ================= */
 
 .meter-card canvas {
-    max-width: 160px;
+    width: min(68%, 190px) !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    max-width: 190px;
+    max-height: 190px;
     margin: 15px auto;
+    display: block;
 }
 
 .percent-label {
@@ -506,9 +521,9 @@ body {
 
 .meter-card {
 
-    min-height: 200px;
+    min-height: clamp(180px, 22vw, 220px);
 
-    padding: 12px;
+    padding: clamp(10px, 1.2vw, 12px);
 }
 
 
@@ -521,11 +536,14 @@ body {
 
 
 .meter-card canvas {
-
-    max-width: 150px;
-    max-height: 150px;
+    width: min(68%, 190px) !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    max-width: 190px;
+    max-height: 190px;
 
     margin: 10px auto;
+    display: block;
 }
 
 
