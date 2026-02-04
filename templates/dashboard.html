@@ -147,20 +147,45 @@
                 <div class="context-left">
                     <div class="context-chip">
                         <span class="chip-label">Mode</span>
-                        <span id="modeLabel">Total</span>
+                        <div class="mode-dropdown" id="modeDropdown">
+                            <button class="mode-trigger" id="modeTrigger" onclick="toggleModeDropdown()">
+                                <span id="modeLabel">Total</span>
+                                <span class="mode-caret">▾</span>
+                            </button>
+                            <div class="mode-menu" id="modeMenu">
+                                <button class="mode-option" data-mode="total" onclick="selectMode('total')">
+                                    <span class="mode-check">✓</span>
+                                    Total
+                                </button>
+                                <button class="mode-option" data-mode="electronic" onclick="selectMode('electronic')">
+                                    <span class="mode-check">✓</span>
+                                    Electronic
+                                </button>
+                                <button class="mode-option" data-mode="physical" onclick="selectMode('physical')">
+                                    <span class="mode-check">✓</span>
+                                    Physical
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="context-chip">
                         <span class="chip-label">Departments</span>
-                        <span id="deptLabel">All</span>
+                        <div id="deptChips" class="chip-list"></div>
+                        <button class="chip-clear" id="deptClearBtn" onclick="clearDepartmentFilters()" aria-label="Clear departments">
+                            &times;
+                        </button>
                     </div>
                     <div class="context-chip">
                         <span class="chip-label">Organization</span>
                         <span id="orgLabel">All</span>
+                        <button class="chip-clear" id="orgClearBtn" onclick="clearOrganizationFilter()" aria-label="Clear organization">
+                            &times;
+                        </button>
                     </div>
                 </div>
                 <div class="context-right">
-                    <button class="ghost-btn" id="sidebarToggleBtn" onclick="toggleSidebar()">
-                        Hide Filters
+                    <button class="ghost-btn" id="clearFiltersTopBtn" onclick="clearAllFilters()">
+                        Clear Filters
                     </button>
                 </div>
             </div>
@@ -1129,8 +1154,10 @@
     <script>
         function updateActiveFilters() {
             const modeLabel = document.getElementById("modeLabel");
-            const deptLabel = document.getElementById("deptLabel");
+            const deptChips = document.getElementById("deptChips");
             const orgLabel = document.getElementById("orgLabel");
+            const deptClearBtn = document.getElementById("deptClearBtn");
+            const orgClearBtn = document.getElementById("orgClearBtn");
 
             const modeText = currentFileMode === "electronic"
                 ? "Electronic"
@@ -1141,14 +1168,159 @@
             modeLabel.innerText = modeText;
 
             const depts = getSelectedDepartments();
-            deptLabel.innerText = depts.length ? depts.join(", ") : "All";
+            if (deptChips) {
+                deptChips.innerHTML = "";
+                if (!depts.length) {
+                    const allTag = document.createElement("span");
+                    allTag.className = "chip-pill is-muted";
+                    allTag.innerText = "All";
+                    deptChips.appendChild(allTag);
+                } else {
+                    depts.forEach(dept => {
+                        const chip = document.createElement("span");
+                        chip.className = "chip-pill";
+                        chip.innerHTML = `
+                            <span class="chip-text"></span>
+                            <button class="chip-x" aria-label="Remove department" data-dept="">&times;</button>
+                        `;
+                        chip.querySelector(".chip-text").innerText = dept;
+                        chip.querySelector(".chip-x").dataset.dept = dept;
+                        deptChips.appendChild(chip);
+                    });
+                }
+            }
+            if (deptClearBtn) {
+                deptClearBtn.classList.toggle("is-visible", depts.length > 0);
+            }
 
             if (currentView === "organization" && selectedOrganization) {
                 orgLabel.innerText = selectedOrganization;
             } else {
                 orgLabel.innerText = "All";
             }
+            if (orgClearBtn) {
+                orgClearBtn.classList.toggle(
+                    "is-visible",
+                    currentView === "organization" && !!selectedOrganization
+                );
+            }
+
+            updateModeMenu();
         }
+
+        function updateModeMenu() {
+            document
+                .querySelectorAll(".mode-option")
+                .forEach(opt => {
+                    const isActive = opt.dataset.mode === currentFileMode;
+                    opt.classList.toggle("is-active", isActive);
+                });
+        }
+
+        function setMode(mode) {
+            currentFileMode = mode;
+
+            document
+                .querySelectorAll(".toggle-btn")
+                .forEach(btn => {
+                    btn.classList.toggle("active", btn.dataset.type === mode);
+                });
+
+            updateKpiTitles();
+
+            if (currentView === "organization" && selectedOrganization) {
+                handleOrgFilter();
+            } else {
+                updateByDepartment();
+            }
+        }
+
+        function selectMode(mode) {
+            setMode(mode);
+            closeModeDropdown();
+        }
+
+        function toggleModeDropdown() {
+            const dropdown = document.getElementById("modeDropdown");
+            if (!dropdown) return;
+            dropdown.classList.toggle("is-open");
+        }
+
+        function closeModeDropdown() {
+            const dropdown = document.getElementById("modeDropdown");
+            if (!dropdown) return;
+            dropdown.classList.remove("is-open");
+        }
+
+        function clearDepartmentFilters() {
+            const role = "{{ user_role }}";
+            const userDept = "{{ user_dept }}";
+
+            document
+                .querySelectorAll("#deptList input")
+                .forEach(cb => cb.checked = false);
+
+            document
+                .querySelectorAll("#orgList input")
+                .forEach(cb => cb.checked = false);
+
+            if (role !== "admin") {
+                document
+                    .querySelectorAll("#deptList input")
+                    .forEach(cb => {
+                        if (cb.value === userDept) {
+                            cb.checked = true;
+                        }
+                    });
+            }
+
+            currentView = "department";
+            selectedOrganization = null;
+            updateByDepartment();
+        }
+
+        function clearOrganizationFilter() {
+            document
+                .querySelectorAll("#orgList input")
+                .forEach(cb => cb.checked = false);
+
+            currentView = "department";
+            selectedOrganization = null;
+            updateByDepartment();
+        }
+
+        function removeDepartment(dept) {
+            const role = "{{ user_role }}";
+            const userDept = "{{ user_dept }}";
+
+            if (role !== "admin" && dept === userDept) {
+                return;
+            }
+
+            document
+                .querySelectorAll("#deptList input")
+                .forEach(cb => {
+                    if (cb.value === dept) {
+                        cb.checked = false;
+                    }
+                });
+
+            currentView = "department";
+            selectedOrganization = null;
+            updateByDepartment();
+        }
+
+        document.addEventListener("click", function (e) {
+            const dropdown = document.getElementById("modeDropdown");
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove("is-open");
+            }
+
+            const chipX = e.target.closest(".chip-x");
+            if (chipX && chipX.dataset && chipX.dataset.dept) {
+                removeDepartment(chipX.dataset.dept);
+            }
+        });
 
         function toggleSidebar() {
             document.body.classList.toggle("sidebar-collapsed");
